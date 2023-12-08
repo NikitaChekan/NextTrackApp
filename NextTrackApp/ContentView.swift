@@ -13,30 +13,44 @@ struct ContentView: View {
     
     var body: some View {
         Button(action: buttonAction) {
-            HStack(spacing: 0) {
-                Image(systemName: "play.fill")
-                    .resizable()
-                    .frame(width: startAnimate ? 50 : 0, height: startAnimate ? 50 : 0)
+            GeometryReader { proxy in
+                let width = proxy.size.width / 2
                 
-                Image(systemName: "play.fill")
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                
-                Image(systemName: "play.fill")
-                    .resizable()
-                    .frame(width: startAnimate ? 0 : 50, height: startAnimate ? 0 : 50)
-                    .opacity(startAnimate ? 0 : 1)
+                HStack(alignment: .center, spacing: 0) {
+                    Image(systemName: "play.fill")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: startAnimate ? width : 0)
+                        .opacity(startAnimate ? 1 : 0)
+
+                    Image(systemName: "play.fill")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: width)
+                    
+                    Image(systemName: "play.fill")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: startAnimate ? 0.5 : width)
+                        .opacity(startAnimate ? 0 : 1)
+                    
+                }
+                .frame(maxHeight: .infinity, alignment: .center)
             }
-            .foregroundStyle(.tint)
         }
+        .frame(maxWidth: 63)
     }
     
     private func buttonAction() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-            startAnimate = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.startAnimate = false
+        if !startAnimate {
+            withAnimation(.interpolatingSpring(stiffness: 170, damping: 15)) {
+                startAnimate = true
+            } completion: {
+                startAnimate = false
+            }
         }
     }
     
